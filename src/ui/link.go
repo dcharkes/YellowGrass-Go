@@ -27,10 +27,9 @@ func LinksToHtmlLinks(links []Link) (htmlLinks []LinkHtml) {
 }
 
 func HtmlLinksToHtml(htmlLinks []LinkHtml) template.HTML {
-	linkTemplate, _ := template.ParseFiles("templates/link.html")
 	var b bytes.Buffer
 	for _, h := range htmlLinks {
-		linkTemplate.Execute(&b, h)
+		renderTemplateWithWriter(&b, "link", h)
 	}
 	return template.HTML(b.String())
 }

@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"html/template"
+	"io"
 )
 
 var templates = template.Must(template.ParseFiles(
@@ -23,4 +24,8 @@ func renderTemplate(tmpl string, param interface{}) template.HTML {
 	var b bytes.Buffer
 	_ = templates.ExecuteTemplate(&b, tmpl+".html", param)
 	return template.HTML(b.String())
+}
+
+func renderTemplateWithWriter(wr io.Writer, tmpl string, param interface{}) {
+	templates.ExecuteTemplate(wr, tmpl+".html", param)
 }
