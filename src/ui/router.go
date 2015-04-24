@@ -7,51 +7,20 @@ import (
 	"strings"
 )
 
-func (uiConfig UiConfig) ToUrl() (url string) {
-	switch page := uiConfig.Page.(type) {
-	default:
-		url = "/error"
-	case Page_Home:
-		url = "/"
-	case Page_About:
-		url = "/about"
-	case Page_Projects:
-		url = "/projects"
-	case Page_Project:
-		url = "/projects/" + page.toUrl()
-	}
-	return
-}
+func (c UiConfig) ToUrl() (url string) { return c.Page.toUrl() }
 
-func (p Page_Project) toUrl() (url string) {
-	var purl string
-	switch page := p.ProjectPage.(type) {
-	default:
-		purl = "/error"
-	case ProjectPage_Home:
-		purl = ""
-	case ProjectPage_Issues:
-		purl = "/issues"
-	case ProjectPage_Issue:
-		purl = "/issues/" + page.toUrl()
-	}
-	url = p.Project.Name + purl
-	return
-}
+func (p Page_Home) toUrl() string     { return "/" }
+func (p Page_About) toUrl() string    { return "/about" }
+func (p Page_Projects) toUrl() string { return "/projects" }
+func (p Page_Project) toUrl() string  { return "/projects/" + p.Project.Name + p.ProjectPage.toUrl() }
+func (p Page_Error) toUrl() string    { return "/error" }
 
-func (p ProjectPage_Issue) toUrl() (url string) {
-	var purl string
-	switch p.IssuePage.(type) {
-	default:
-		purl = "/error"
-	case IssuePage_Home:
-		purl = ""
-	case IssuePage_Settings:
-		purl = "/settings"
-	}
-	url = p.Issue.Title + purl
-	return
-}
+func (p ProjectPage_Home) toUrl() string   { return "" }
+func (p ProjectPage_Issues) toUrl() string { return "/issues" }
+func (p ProjectPage_Issue) toUrl() string  { return "/issues/" + p.Issue.Title + p.IssuePage.toUrl() }
+
+func (i IssuePage_Home) toUrl() string     { return "" }
+func (i IssuePage_Settings) toUrl() string { return "/settings" }
 
 func Route(url string, data *data.Data) (uiConfig UiConfig) {
 	urlTrimmed := strings.Trim(url, "/")

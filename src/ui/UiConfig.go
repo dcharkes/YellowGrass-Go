@@ -8,6 +8,7 @@ import (
 
 type SubUiConfig interface {
 	toUiConfig(c UiConfig) UiConfig
+	toUrl() string
 }
 type UiConfig struct {
 	Page Page //case class Page
