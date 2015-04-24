@@ -1,0 +1,123 @@
+<html>
+	<head>
+		<style>
+			body {
+				margin:0px;
+				font-family: Arial, sans-serif;
+				font-size: 14px;
+			}
+			#header {
+				padding-left:8px;
+				background-color: rgb(207, 214, 126);
+				height: 45px;
+			}
+			#header a{
+				color: rgb(82, 84, 54);
+				padding: 12px;
+				font-weight: 300;
+				line-height: 21px;
+				display: inline-block;
+			}
+			#header a:hover{
+				background-color: #C0C779;
+			}
+			#footer{
+				padding-left:20px;
+				background-color: rgb(245, 245, 245);
+				color: rgb(34, 34, 34);
+				height: 45px;
+				line-height: 45px;
+			}
+			#page{
+				padding:20px;
+			}
+			h1{
+				color: rgb(34, 34, 34);
+				display: block;
+				font-size: 26px;
+				font-weight: 300;
+				line-height: 28px;
+				border-bottom-color: rgb(238, 238, 238);
+				border-bottom-style: solid;
+				border-bottom-width: 1px;
+			}
+			h2{
+				color: rgb(34, 34, 34);
+				display: block;
+				font-size: 20px;
+				font-weight: 300;
+				line-height: 28px;
+				border-bottom-color: rgb(238, 238, 238);
+				border-bottom-style: solid;
+				border-bottom-width: 1px;
+			}
+			h3{
+				color: rgb(34, 34, 34);
+				display: block;
+				font-size: 18px;
+				font-weight: 300;
+				line-height: 28px;
+				border-bottom-color: rgb(238, 238, 238);
+				border-bottom-style: solid;
+				border-bottom-width: 1px;
+			}
+			#project-list a,
+			#issue-list a{
+				color: rgb(130, 138, 43);
+				display: block;
+				line-height: 25px;
+			}
+			#project-list a:hover,
+			#issue-list a:hover{
+				background-color: rgb(245, 245, 245);
+			}
+			#project-menu, 
+			#issue-menu{
+				height: 41px;
+				border-bottom-color: rgb(221, 221, 221);
+				border-bottom-style: solid;
+				border-bottom-width: 1px;
+				margin-bottom: 5px;
+			}
+			#project-menu a, 
+			#issue-menu a{
+				display: inline-block;
+				line-height: 20px;
+				padding: 10px;
+				color: rgb(111, 111, 111);
+				border-style: solid;
+				border-width: 1px 1px 0px 1px;
+				border-color: rgb(221, 221, 221);
+				margin-right: 5px;
+			}
+			#project-menu a:hover,
+			#issue-menu a:hover{
+				background-color: rgb(245, 245, 245);
+			}
+			.commentHeader{
+				color: gray;
+				font-style: italic;
+				font-size: small;
+				margin-bottom: 2px;
+			}
+			.commentBody, pre{
+				color: rgb(111, 111, 111);
+				padding: 10.5px 21px;
+				margin: 0 0 21px;
+				font-size: 15px;
+				border-left: 1px solid rgb(221, 221, 221);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			{{.HeaderHtml}}
+		</div>
+		<div id="page">
+			{{.PageHtml}}
+		</div>
+		<div id="footer">
+			YellowGrass.org - the tag-based issue tracker
+		</div>
+	</body>
+</html>

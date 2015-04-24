@@ -1,0 +1,9 @@
+{{.Body}}
+
+<h3>Issue Log</h3>
+<div id="comments">
+{{ range .Comments }}
+	<div class="commentHeader">Commented:</div>
+    <div class="commentBody">{{ .Body }}</div>
+{{ end }}
+</div>
