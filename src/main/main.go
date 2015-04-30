@@ -4,6 +4,7 @@ import (
 	"data"
 	"io"
 	"net/http"
+	"strings"
 	"ui"
 )
 
@@ -19,6 +20,15 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	d = data.CreateData()
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "img/favicon.ico") })
+	http.HandleFunc("/polymer-test/", func(w http.ResponseWriter, r *http.Request) {
+		url := strings.Trim(r.URL.Path, "/")
+		http.ServeFile(w, r, url)
+	})
+	http.HandleFunc("/polymer-test2/", func(w http.ResponseWriter, r *http.Request) {
+		url := strings.Trim(r.URL.Path, "/")
+		http.ServeFile(w, r, url)
+	})
 	http.HandleFunc("/", viewHandler)
+
 	http.ListenAndServe(":8080", nil)
 }
