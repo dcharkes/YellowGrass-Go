@@ -12,6 +12,8 @@
   <script src="director/build/director.js"></script>
 
   <link rel="import" href="components/font-roboto/roboto.html">
+  <link rel="import" href="components/core-menu/core-menu.html">
+  <link rel="import" href="components/core-pages/core-pages.html">
   <link rel="import" href="components/core-toolbar/core-toolbar.html">
   <link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
   <link rel="import" href="components/core-header-panel/core-header-panel.html">
@@ -53,6 +55,7 @@
 	  }
 	  paper-item a{
 	  	color: black;
+	  	text-decoration: none;
 	  }
 	  paper-item#core-selected{
 	  	background-color: #E5E5E5;
@@ -60,20 +63,20 @@
     </style>
     <core-drawer-panel>
       <core-header-panel drawer mode="seamed">
-        <core-toolbar>Menu</core-toolbar>
+        <core-toolbar>YellowGrass</core-toolbar>
         <core-menu selected="0" on-core-select="{{closeDrawer}}">
           <paper-item>
             <a href="/polymer-test2/" on-click="{{navigate}}">
-              YellowGrass
+              Home
             </a>
           </paper-item>
           <paper-item>
-            <a href="about" on-click="{{navigate}}">
+            <a href="/polymer-test2/about" on-click="{{navigate}}">
               About
             </a>
           </paper-item>
           <paper-item>
-            <a href="projects" on-click="{{navigate}}">
+            <a href="/polymer-test2/projects" on-click="{{navigate}}">
               Projects
             </a>
           </paper-item>
@@ -85,7 +88,17 @@
           </paper-icon-button>
           <div>Title</div>
         </core-toolbar>
-        <div> Main content... </div>
+		<core-pages id="pages" selected="2">
+		  <section layout vertical>
+            <home-page id="home"></home-page>
+          </section>
+          <section layout vertical>
+		    <div>One</div>
+		  </section>
+		  <section layout vertical>
+		    <div>Two</div>
+		  </section>
+		</core-pages>
       </core-header-panel>
     </core-drawer-panel>
   </template>
@@ -99,11 +112,29 @@
         goBack: function(e) {
           e.preventDefault();
           this.fire('change-route-back');
-        }
+        },
+        changePage : function(n){
+          var pages = this.$.pages;
+          pages.selected = n;
+        },
       });
     })();
   </script>
 </polymer-element>
+
+<polymer-element name="home-page" attributes="contacts heading">
+  <template>
+		====
+  </template>
+  <script>
+  (function() {
+    Polymer({
+
+    });
+  })();
+  </script>
+</polymer-element>
+
 
 <script>
 (function(window, document, undefined) {
@@ -112,61 +143,40 @@
   // Select auto-binding template and use as the top level of our app
   var app = document.querySelector('#app');
   app.addEventListener('template-bound', function() {
-    var pages = document.querySelector('#pages');
-    var infoPage = document.querySelector('info-page');
-
-    // Setup categories
-    app.category = 'all';
-
-    // Setup routing
-    var DEFAULT_ROUTE = '/polymer-test2/';
-
-    var home = function(category) {
-     // app.category = category;
-
-     // pages.selected = 0;
+    var mainPage = document.querySelector('main-page');
+  
+    var home = function() {
+      mainPage.changePage(0);
     };
 
-    var about = function(category, contactId) {
-      //infoPage.contactId = contactId;
-     // pages.selected = 1;
+    var about = function() {
+      mainPage.changePage(1);
     };
 
     var projects = function() {
-    // pages.selected = 2;
+      mainPage.changePage(2);
     };
 
     var routes = {
-      '/polymer-test2/': home,
       '/polymer-test2/about': about,
-      '/polymer-test2/projects': projects
+      '/polymer-test2/projects': projects,
+      '/polymer-test2/': home,
     };
 
     var router = app.router = Router(routes);
-    router.configure({html5history: true});
-    router.init(DEFAULT_ROUTE);
-    // Listen for pages to fire their change-route event
-    // Instead of letting them change the route directly,
-    // handle the event here and change the route for them
+    router.configure({html5history: true, strict:false});
+    router.init();
+
     document.addEventListener('change-route', function(e) {
-      console.log("asdf");
       if (e.detail) {
         router.setRoute(e.detail);
       }
     });
-    // Similar to change-route, listen for when a page wants to go
-    // back to the previous state and change the route for them
+
     document.addEventListener('change-route-back', function() {
       history.back();
     });
 
-    // Handle page transitions
-//    pages.addEventListener('core-animated-pages-transition-prepare', function() {
- //     pages.selectedItem.querySelector('.page').willPrepare();
-  //  });
-
-    // Set duration for core-animated-pages transitions
- //   CoreStyle.g.transitions.duration = '0.2s';
 
   });
 
