@@ -60,11 +60,17 @@
 	  paper-item#core-selected{
 	  	background-color: #E5E5E5;
 	  }
+      core-menu.fixlinkpadding paper-item::shadow .button-content{
+        padding:0;
+      }
+      core-menu.fixlinkpadding paper-item>a{
+        padding: 0.8em 0.3em;
+      }
     </style>
     <core-drawer-panel>
       <core-header-panel drawer mode="seamed">
         <core-toolbar>YellowGrass</core-toolbar>
-        <core-menu selected="0" on-core-select="{{closeDrawer}}">
+        <core-menu selected="0" on-core-select="{{closeDrawer}}" class="fixlinkpadding">
           <paper-item>
             <a href="/polymer-test2/" on-click="{{navigate}}">
               Home
