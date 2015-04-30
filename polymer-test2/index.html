@@ -13,6 +13,7 @@
 
   <link rel="import" href="components/font-roboto/roboto.html">
   <link rel="import" href="components/core-menu/core-menu.html">
+  <link rel="import" href="components/core-list/core-list.html">
   <link rel="import" href="components/core-pages/core-pages.html">
   <link rel="import" href="components/core-toolbar/core-toolbar.html">
   <link rel="import" href="components/core-drawer-panel/core-drawer-panel.html">
@@ -128,19 +129,196 @@
   </script>
 </polymer-element>
 
-<polymer-element name="home-page" attributes="contacts heading">
+<polymer-element name="home-page" id="home-page" attributes="contacts heading">
   <template>
-		====
+
+    <style>
+	  core-list {
+	    height: 100%;
+	    overflow: auto;
+	    -webkit-overflow-scrolling: touch; 
+	  }
+	  #around-core-list{
+	  	height:700px;
+	  	overflow:auto;
+	  }
+    </style>
+
+<div id="around-core-list">		
+  <core-list id="list" data="{{data}}" selectionEnabled="{{selectionEnabled}}"
+    selection="{{selection}}" height="80" flex multi?={{multi}}>
+    <template>
+
+<project-list color="{{model.color}}" avatar="{{model.id}}" username="{{model.name}}" text="{{model.details}}">
+</project-list>
+
+    </template>
+  </core-list>
+</div>
+
+
   </template>
   <script>
   (function() {
     Polymer({
+    count: 50000,
+    ready: function() {
+      this.data = this.generateData();
+      window.list = this.$.list;
+      
+    },
+    generateData: function() {
+      var data = [];
+      for (i=0; i<this.count; i++) {
+        data.push({
+          id: i,
+          name: (i%2==0)?"Spoofax":"YellowGrass",
+          details: (i%2==0)?"Tabs vs Spaces":"New Web App",
+          image: i,
+          color: (i%2==0)?"orchid":"moss",
+          type: 0,
+          checked: false
+        });
+      }
+      console.log("a" );
+      return data;
+    },
 
     });
   })();
   </script>
 </polymer-element>
 
+
+<polymer-element name="project-list" attributes="avatar color username text status timestamp">
+  <template>
+	<style>
+	:host {
+		display: block;
+        position: relative;
+		width: 100%;
+		border-bottom: 1px solid #e0e0e0;
+        font-size: 16px;
+        min-height: 72px;
+        z-index: 0;
+	}
+	.user-list {
+		padding: 16px;
+	}
+	.avatar {
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+  		margin: 0 16px 0 0;
+		background: #9e9e9e url(lion.png) center center no-repeat;
+		background-size: contain;
+		position: relative;
+	}
+	profile-img{
+  		margin: 0 16px 0 0;
+	}
+	.status {
+		position: absolute;
+		bottom: -3px;
+		right: -3px;
+		border-radius: 50%;
+		width: 14px;
+		height: 14px;
+		background-color: #7EDF25;
+		display: none;
+	}
+	.status.online {
+		display: block;
+	}
+	.username {
+		text-transform: capitalize;
+		font-weight: 500;
+		color: #919191;
+		line-height: 1.3em;
+		max-width: 90%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	.timestamp {
+		font-size: 0.75em;
+		color: #919191;
+	}
+	</style>
+
+	<section class="user-list" layout horizontal>
+        <profile-img id="profileimage" letter="{{username[0]}}"></profile-img>
+		<div flex>
+			<div class="username">{{username}}</div>
+			<div class="text">{{text}}</div>
+		</div>
+		<time class="timestamp" is="relative-time" datetime="{{timestamp}}"></time>
+	</section>
+</template>
+<script>
+Polymer('project-list', {
+	avatar: '',
+	color: '',
+	username: '',
+	text: '',
+	status: '',
+	timestamp: new Date().toISOString(),
+});
+</script>
+</polymer-element>
+
+
+<polymer-element name="profile-img" attributes="src letter" noscript>
+  <template>
+    <style>
+      .profile {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        transition: transform 350ms ease-in-out;
+        background-color: #9e9e9e;
+        color: white;
+        will-change: transform;
+      }
+      :host([selected]) .profile {
+        transform: rotate3d(0,1,0,180deg);
+      }
+      :host([selected]) img,
+      :host([selected]) .letter {
+        opacity: 0;
+      }
+      :host([selected]) core-icon {
+        transform: rotate3d(0,1,0,-180deg) scale(1);
+        opacity: 1;
+      }
+      img,
+      .letter {
+        border-radius: inherit;
+        width: 100%;
+        height: 100%;
+        transition: opacity 200ms ease-in-out 100ms;
+        will-change: opacity;
+        text-transform: uppercase;
+      }
+      core-icon {
+        transition: transform 300ms ease-in-out 100ms;
+        will-change: opacity;
+        transform: rotate3d(0,1,0,-180deg) scale(0);
+        position: absolute !important;
+        top: 20%;
+        left: 20%;
+        opacity: 0;
+      }
+    </style>
+    <div class="profile">
+      <template if="{{src}}"><img src="{{src}}"></template>
+      <template if="{{!src}}">
+        <span class="letter" layout horizontal center-center>{{letter}}</span>
+      </template>
+      <core-icon icon="check"></core-icon>
+    </div>
+   </template>
+</polymer-element>
 
 <script>
 (function(window, document, undefined) {
