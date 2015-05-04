@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"ui"
+	"ws"
 )
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +29,10 @@ func main() {
 		url := strings.Trim(r.URL.Path, "/")
 		http.ServeFile(w, r, url)
 	})
+	
+	server := ws.NewServer("/ws")
+	go server.Listen()
+	
 	http.HandleFunc("/", viewHandler)
 
 	http.ListenAndServe(":8080", nil)

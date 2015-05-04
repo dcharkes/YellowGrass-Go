@@ -119,5 +119,16 @@
 		<div id="footer">
 			YellowGrass.org - the tag-based issue tracker
 		</div>
+		<script language="javascript">
+			var ws = new WebSocket("ws://localhost:8080/ws");
+			ws.onmessage = function(msg){
+				var data = JSON.parse(msg.data);
+      			console.log(data);
+ 			}
+ 			ws.onopen = function(e) {
+ 				var msg = {"body":"message"};
+				ws.send(JSON.stringify(msg));
+			}
+		</script>
 	</body>
 </html>
