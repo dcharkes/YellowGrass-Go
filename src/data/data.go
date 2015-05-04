@@ -8,6 +8,8 @@ type Data struct {
 	Projects []*model.Project
 }
 
+var D Data
+
 func (data *Data) addProject(project *model.Project) {
 	data.Projects = append(data.Projects, project)
 }

@@ -8,17 +8,17 @@ import (
 	"ui"
 )
 
-var d data.Data
-
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	requestUrl := r.URL.Path
-	c := ui.Route(requestUrl, &d)
-	responseHtml := c.RenderUiConfig(d)
+	c := ui.Route(requestUrl, &data.D)
+	responseHtml := c.RenderUiConfig(data.D)
 	io.WriteString(w, string(responseHtml))
 }
 
 func main() {
-	d = data.CreateData()
+	data.D = data.CreateData()
+	go data.AddProjectsOverTime()
+
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "img/favicon.ico") })
 	http.HandleFunc("/polymer-test/", func(w http.ResponseWriter, r *http.Request) {
 		url := strings.Trim(r.URL.Path, "/")
