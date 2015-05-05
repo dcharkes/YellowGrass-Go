@@ -1,6 +1,28 @@
 <html>
 	<head>
 		<style>
+			@keyframes highlight {
+			   0% {background: none;}
+			   25% {background: #C0C779;}
+			   100% {background: none;}
+			}
+			@-webkit-keyframes highlight { /* Safari and Chrome */
+			   0% {background: none;}
+			   25% {background: #C0C779;}
+			   100% {background: none;}
+			}
+			@keyframes fadein {
+			    from { opacity: 0; }
+			    to   { opacity: 1; }
+			}
+			@-webkit-keyframes fadein { /* Safari and Chrome */
+			    from { opacity:0;  }
+			    to {   opacity:1;  }
+		    }
+			#project-list a.new{
+				animation: highlight 0.5s ease;
+				-webkit-animation: highlight 0.5s ease; /* Safari and Chrome */
+			}
 			body {
 				margin:0px;
 				font-family: Arial, sans-serif;
@@ -17,6 +39,7 @@
 				font-weight: 300;
 				line-height: 21px;
 				display: inline-block;
+    			transition: background-color 500ms ease;
 			}
 			#header a:hover{
 				background-color: #C0C779;
@@ -66,6 +89,7 @@
 				color: rgb(130, 138, 43);
 				display: block;
 				line-height: 25px;
+    			transition: background-color 500ms ease;
 			}
 			#project-list a:hover,
 			#issue-list a:hover{
@@ -125,7 +149,7 @@
 			</div>
 		</template>
 		<template id="project-link-template">
-			<a href="/projects/projectName">projectName</a>
+			<a href="/projects/projectName" class="new">projectName</a>
 		</template>
 		<script language="javascript">
 			var ws = new WebSocket("ws://localhost:8080/ws");
