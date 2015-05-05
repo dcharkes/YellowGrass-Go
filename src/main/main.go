@@ -30,8 +30,8 @@ func main() {
 		http.ServeFile(w, r, url)
 	})
 	
-	server := ws.NewServer("/ws")
-	go server.Listen()
+	ws.S = ws.NewServer("/ws")
+	go ws.S.Listen()
 	
 	http.HandleFunc("/", viewHandler)
 

@@ -5,8 +5,11 @@ import (
 	"golang.org/x/net/websocket"
 	"io"
 	"log"
+	"model"
 	"net/http"
 )
+
+var S *Server
 
 // Chat server.
 type Server struct {
@@ -71,6 +74,12 @@ func (s *Server) sendPastMessages(c *Client) {
 func (s *Server) sendAll(msg *Message) {
 	for _, c := range s.clients {
 		c.Write(msg)
+	}
+}
+
+func (s *Server) SendProjects(msg []*model.Project) {
+	for _, c := range s.clients {
+		c.sendProjects(msg)
 	}
 }
 
@@ -201,6 +210,11 @@ func (c *Client) listenWrite() {
 	}
 }
 
+func (c *Client) sendProjects(msg []*model.Project) {
+	log.Println("Send:", msg)
+	websocket.JSON.Send(c.ws, msg)
+}
+
 // Listen read request via chanel
 func (c *Client) listenRead() {
 	log.Println("Listening read from client")
@@ -222,7 +236,7 @@ func (c *Client) listenRead() {
 			} else if err != nil {
 				c.server.Err(err)
 			} else {
-				msg.Messages = append(msg.Messages, &NestedMessage{"a","b"})
+				msg.Messages = append(msg.Messages, &NestedMessage{"a", "b"})
 				c.server.SendAll(&msg)
 			}
 		}
@@ -230,8 +244,8 @@ func (c *Client) listenRead() {
 }
 
 type Message struct {
-	Author   string          `json:"author"`
-	Body     string          `json:"body"`
+	Author   string           `json:"author"`
+	Body     string           `json:"body"`
 	Messages []*NestedMessage `json:messages`
 }
 type NestedMessage struct {

@@ -4,6 +4,7 @@ import (
 	"time"
 	"model"
 	"fmt"
+	"ws"
 )
 
 func AddProjectsOverTime() {
@@ -13,5 +14,6 @@ func AddProjectsOverTime() {
 		i++
 		p := model.CreateProject(fmt.Sprintf("Project %d", i), fmt.Sprintf("Description %d", i))
 		D.addProject(p)
+		ws.S.SendProjects(D.Projects)
 	}
 }

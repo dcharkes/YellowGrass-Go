@@ -5,7 +5,7 @@ import ()
 type Project struct {
 	Name        string
 	Description string
-	Issues      []*Issue
+	Issues      []*Issue `json:"-"`
 }
 
 func CreateProject(projName string, desc string) (proj *Project) {

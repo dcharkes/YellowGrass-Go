@@ -119,11 +119,35 @@
 		<div id="footer">
 			YellowGrass.org - the tag-based issue tracker
 		</div>
+		
+		<template id="project-list-template">
+			<div id="project-list">
+			</div>
+		</template>
+		<template id="project-link-template">
+			<a href="/projects/projectName">projectName</a>
+		</template>
 		<script language="javascript">
 			var ws = new WebSocket("ws://localhost:8080/ws");
 			ws.onmessage = function(msg){
 				var data = JSON.parse(msg.data);
       			console.log(data);
+      			if(data instanceof Array){
+      				var replace = document.querySelector('#project-list');
+      				if(replace){
+	      				var projectListTemplate = document.querySelector('#project-list-template');
+	      				var projectLinkTemplate = document.querySelector('#project-link-template');
+	      				var ps = document.importNode(projectListTemplate.content, true);
+	      				data.forEach(function(proj){
+	      					var p = document.importNode(projectLinkTemplate.content, true);
+	      					p.firstElementChild.href = "/projects/"+proj.Name;
+	      					p.firstElementChild.innerHTML = proj.Name;
+	      					ps.firstElementChild.appendChild(p);
+	      				});
+	      				var replaceParent = replace.parentNode;
+	      				replaceParent.replaceChild( ps, replace);
+      				}
+      			}
  			}
  			ws.onopen = function(e) {
  				var msg = {"body":"message"};
