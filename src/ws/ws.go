@@ -13,67 +13,26 @@ var S *Server
 
 // Chat server.
 type Server struct {
-	pattern   string
-	messages  []*Message
-	clients   map[int]*Client
-	addCh     chan *Client
-	delCh     chan *Client
-	sendAllCh chan *Message
-	doneCh    chan bool
-	errCh     chan error
+	pattern string
+	clients map[int]*Client
+	addCh   chan *Client
+	delCh   chan *Client
+	errCh   chan error
 }
 
 // Create new chat server.
 func NewServer(pattern string) *Server {
-	messages := []*Message{}
 	clients := make(map[int]*Client)
 	addCh := make(chan *Client)
 	delCh := make(chan *Client)
-	sendAllCh := make(chan *Message)
-	doneCh := make(chan bool)
 	errCh := make(chan error)
 
 	return &Server{
 		pattern,
-		messages,
 		clients,
 		addCh,
 		delCh,
-		sendAllCh,
-		doneCh,
 		errCh,
-	}
-}
-
-func (s *Server) Add(c *Client) {
-	s.addCh <- c
-}
-
-func (s *Server) Del(c *Client) {
-	s.delCh <- c
-}
-
-func (s *Server) SendAll(msg *Message) {
-	s.sendAllCh <- msg
-}
-
-func (s *Server) Done() {
-	s.doneCh <- true
-}
-
-func (s *Server) Err(err error) {
-	s.errCh <- err
-}
-
-func (s *Server) sendPastMessages(c *Client) {
-	for _, msg := range s.messages {
-		c.Write(msg)
-	}
-}
-
-func (s *Server) sendAll(msg *Message) {
-	for _, c := range s.clients {
-		c.Write(msg)
 	}
 }
 
@@ -98,8 +57,9 @@ func (s *Server) Listen() {
 			}
 		}()
 
-		client := NewClient(ws, s)
-		s.Add(client)
+		client := &Client{maxId, ws, s}
+		maxId++
+		s.addCh <- client
 		client.Listen()
 	}
 	http.Handle(s.pattern, websocket.Handler(onConnected))
@@ -110,32 +70,23 @@ func (s *Server) Listen() {
 
 		// Add new a client
 		case c := <-s.addCh:
-			log.Println("Added new client")
+			log.Println("Added new client", c.id)
 			s.clients[c.id] = c
 			log.Println("Now", len(s.clients), "clients connected.")
-			s.sendPastMessages(c)
 
 		// del a client
 		case c := <-s.delCh:
-			log.Println("Delete client")
+			log.Println("Delete client", c.id)
 			delete(s.clients, c.id)
-
-		// broadcast message for all clients
-		case msg := <-s.sendAllCh:
-			log.Println("Send all:", msg)
-			s.messages = append(s.messages, msg)
-			s.sendAll(msg)
 
 		case err := <-s.errCh:
 			log.Println("Error:", err.Error())
 
-		case <-s.doneCh:
-			return
 		}
 	}
 }
 
-const channelBufSize = 100
+//const channelBufSize = 100
 
 var maxId int = 0
 
@@ -144,44 +95,6 @@ type Client struct {
 	id     int
 	ws     *websocket.Conn
 	server *Server
-	ch     chan *Message
-	doneCh chan bool
-}
-
-// Create new chat client.
-func NewClient(ws *websocket.Conn, server *Server) *Client {
-
-	if ws == nil {
-		panic("ws cannot be nil")
-	}
-
-	if server == nil {
-		panic("server cannot be nil")
-	}
-
-	maxId++
-	ch := make(chan *Message, channelBufSize)
-	doneCh := make(chan bool)
-
-	return &Client{maxId, ws, server, ch, doneCh}
-}
-
-func (c *Client) Conn() *websocket.Conn {
-	return c.ws
-}
-
-func (c *Client) Write(msg *Message) {
-	select {
-	case c.ch <- msg:
-	default:
-		c.server.Del(c)
-		err := fmt.Errorf("client %d is disconnected.", c.id)
-		c.server.Err(err)
-	}
-}
-
-func (c *Client) Done() {
-	c.doneCh <- true
 }
 
 // Listen Write and Read request via chanel
@@ -195,23 +108,13 @@ func (c *Client) listenWrite() {
 	log.Println("Listening write to client")
 	for {
 		select {
-
-		// send message to the client
-		case msg := <-c.ch:
-			log.Println("Send:", msg)
-			websocket.JSON.Send(c.ws, msg)
-
-		// receive done request
-		case <-c.doneCh:
-			c.server.Del(c)
-			c.doneCh <- true // for listenRead method
-			return
+			//TODO: move send projects here
 		}
 	}
 }
 
 func (c *Client) sendProjects(msg []*model.Project) {
-	log.Println("Send:", msg)
+	log.Println("Send", c.id, ":", msg)
 	websocket.JSON.Send(c.ws, msg)
 }
 
@@ -221,38 +124,26 @@ func (c *Client) listenRead() {
 	for {
 		select {
 
-		// receive done request
-		case <-c.doneCh:
-			c.server.Del(c)
-			c.doneCh <- true // for listenWrite method
-			return
-
 		// read data from websocket connection
 		default:
-			var msg Message
+			var msg SomeMessage
 			err := websocket.JSON.Receive(c.ws, &msg)
 			if err == io.EOF {
-				c.doneCh <- true
+				c.server.delCh <- c
+				return
 			} else if err != nil {
-				c.server.Err(err)
+				c.server.errCh <- err
 			} else {
-				msg.Messages = append(msg.Messages, &NestedMessage{"a", "b"})
-				c.server.SendAll(&msg)
+				log.Println("Received", c.id, ":", msg)
 			}
 		}
 	}
 }
 
-type Message struct {
-	Author   string           `json:"author"`
-	Body     string           `json:"body"`
-	Messages []*NestedMessage `json:messages`
-}
-type NestedMessage struct {
-	Author string `json:"author"`
-	Body   string `json:"body"`
+type SomeMessage struct {
+	Body string `json:"body"`
 }
 
-func (self *Message) String() string {
-	return self.Author + " says " + self.Body
+func (self SomeMessage) String() string {
+	return fmt.Sprintf("%#v", self)
 }

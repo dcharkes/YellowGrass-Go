@@ -1,6 +1,8 @@
 package model
 
-import ()
+import (
+	"fmt"
+)
 
 type Project struct {
 	Name        string
@@ -11,4 +13,8 @@ type Project struct {
 func CreateProject(projName string, desc string) (proj *Project) {
 	proj = &Project{projName, desc, nil}
 	return
+}
+
+func (self *Project) String() string {
+	return fmt.Sprintf("%#v", self)
 }
