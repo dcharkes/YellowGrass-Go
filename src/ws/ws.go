@@ -1,6 +1,7 @@
 package ws
 
 import (
+	//	"data"
 	"fmt"
 	"golang.org/x/net/websocket"
 	"io"
@@ -36,9 +37,16 @@ func NewServer(pattern string) *Server {
 	}
 }
 
-func (s *Server) SendProjects(msg []*model.Project) {
+func (s *Server) SendProjects(projects []*model.Project) {
+	msg := &Message{All: projects}
 	for _, c := range s.clients {
-		c.sendProjects(msg)
+		c.ch <- msg
+	}
+}
+func (s *Server) SendProject(project *model.Project) {
+	msg := &Message{Create: []*model.Project{project}}
+	for _, c := range s.clients {
+		c.ch <- msg
 	}
 }
 
@@ -57,10 +65,11 @@ func (s *Server) Listen() {
 			}
 		}()
 
-		client := &Client{maxId, ws, s}
+		client := &Client{maxId, ws, s, make(chan *Message)}
 		maxId++
 		s.addCh <- client
-		client.Listen()
+		go client.listenWrite()
+		client.listenRead()
 	}
 	http.Handle(s.pattern, websocket.Handler(onConnected))
 	log.Println("Created handler")
@@ -72,6 +81,7 @@ func (s *Server) Listen() {
 		case c := <-s.addCh:
 			log.Println("Added new client", c.id)
 			s.clients[c.id] = c
+			//			c.ch <- &Message{All: data.D.Projects}
 			log.Println("Now", len(s.clients), "clients connected.")
 
 		// del a client
@@ -86,7 +96,7 @@ func (s *Server) Listen() {
 	}
 }
 
-//const channelBufSize = 100
+const channelBufSize = 100
 
 var maxId int = 0
 
@@ -95,12 +105,7 @@ type Client struct {
 	id     int
 	ws     *websocket.Conn
 	server *Server
-}
-
-// Listen Write and Read request via chanel
-func (c *Client) Listen() {
-	go c.listenWrite()
-	c.listenRead()
+	ch     chan *Message
 }
 
 // Listen write request via chanel
@@ -108,14 +113,13 @@ func (c *Client) listenWrite() {
 	log.Println("Listening write to client")
 	for {
 		select {
-			//TODO: move send projects here
+		// send message to the client
+		case msg := <-c.ch:
+			log.Println("Send", c.id, ":", msg)
+			websocket.JSON.Send(c.ws, msg)
+
 		}
 	}
-}
-
-func (c *Client) sendProjects(msg []*model.Project) {
-	log.Println("Send", c.id, ":", msg)
-	websocket.JSON.Send(c.ws, msg)
 }
 
 // Listen read request via chanel
@@ -138,6 +142,11 @@ func (c *Client) listenRead() {
 			}
 		}
 	}
+}
+
+type Message struct {
+	All    []*model.Project `json:"all,omitempty"`
+	Create []*model.Project `json:"create,omitempty"`
 }
 
 type SomeMessage struct {

@@ -39,7 +39,6 @@
 				font-weight: 300;
 				line-height: 21px;
 				display: inline-block;
-    			transition: background-color 500ms ease;
 			}
 			#header a:hover{
 				background-color: #C0C779;
@@ -89,7 +88,6 @@
 				color: rgb(130, 138, 43);
 				display: block;
 				line-height: 25px;
-    			transition: background-color 500ms ease;
 			}
 			#project-list a:hover,
 			#issue-list a:hover{
@@ -153,16 +151,17 @@
 		</template>
 		<script language="javascript">
 			var ws = new WebSocket("ws://localhost:8080/ws");
+			//var projects;
 			ws.onmessage = function(msg){
 				var data = JSON.parse(msg.data);
       			console.log(data);
-      			if(data instanceof Array){
+      			if(data.all){
       				var replace = document.querySelector('#project-list');
       				if(replace){
 	      				var projectListTemplate = document.querySelector('#project-list-template');
 	      				var projectLinkTemplate = document.querySelector('#project-link-template');
 	      				var ps = document.importNode(projectListTemplate.content, true);
-	      				data.forEach(function(proj){
+	      				data.all.forEach(function(proj){
 	      					var p = document.importNode(projectLinkTemplate.content, true);
 	      					p.firstElementChild.href = "/projects/"+proj.Name;
 	      					p.firstElementChild.innerHTML = proj.Name;
@@ -170,6 +169,18 @@
 	      				});
 	      				var replaceParent = replace.parentNode;
 	      				replaceParent.replaceChild( ps, replace);
+      				}
+      			}
+      			if(data.create){
+      				var update = document.querySelector('#project-list');
+      				if(update){
+	      				var projectLinkTemplate = document.querySelector('#project-link-template');
+	      				data.create.forEach(function(proj){
+	      					var p = document.importNode(projectLinkTemplate.content, true);
+	      					p.firstElementChild.href = "/projects/"+proj.Name;
+	      					p.firstElementChild.innerHTML = proj.Name;
+	      					update.appendChild(p);
+	      				});
       				}
       			}
  			}
