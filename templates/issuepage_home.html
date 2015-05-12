@@ -1,9 +1,79 @@
-{{.Body}}
 
-<h3>Issue Log</h3>
-<div id="comments">
-{{ range .Comments }}
-	<div class="commentHeader">Commented:</div>
-    <div class="commentBody">{{ .Body }}</div>
-{{ end }}
-</div>
+<paper-shadow class="card" z="1">
+	<issue-title>{{.Title}}</issue-title>
+	<issue-description>{{.Body}}</issue-description>
+	{{range .Comments}}
+		<issue-comment>{{.Body}}</issue-comment>
+	{{end}}
+</paper-shadow>
+
+<polymer-element name="issue-title">
+	<template>
+		<style>
+			.title{
+				padding: 20px;
+				border-bottom: 1px solid #e0e0e0;
+				font-family: RobotoDraft, sans-serif;
+				font-size:20px;
+			}
+		</style>
+		<div class="title">
+			<content></content>
+		</div>
+	</template>
+	<script>
+		Polymer({});
+	</script>
+</polymer-element>
+
+<polymer-element name="issue-description">
+	<template>
+		<style>
+			.comment{
+				padding: 20px;
+				border-bottom: 1px solid #e0e0e0;
+				font-family: RobotoDraft, sans-serif;
+			}
+			:host(:last-child) .comment {
+				border-bottom-width: 0px;
+			}
+			.author{
+				color:rgb(153, 153, 153);
+				margin-bottom: 7px;
+			}
+		</style>
+		<div class="comment">
+			<div class="author">Author:</div>
+			<content></content>
+		</div>
+	</template>
+	<script>
+		Polymer({});
+	</script>
+</polymer-element>
+
+<polymer-element name="issue-comment">
+	<template>
+		<style>
+			.comment{
+				padding: 20px;
+				border-bottom: 1px solid #e0e0e0;
+				font-family: RobotoDraft, sans-serif;
+			}
+			:host(:last-child) .comment {
+				border-bottom-width: 0px;
+			}
+			.author{
+				color:rgb(153, 153, 153);
+				margin-bottom: 7px;
+			}
+		</style>
+		<div class="comment">
+			<div class="author">Comment:</div>
+			<content></content>
+		</div>
+	</template>
+	<script>
+		Polymer({});
+	</script>
+</polymer-element>

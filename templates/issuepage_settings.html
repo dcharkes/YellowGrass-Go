@@ -1,6 +1,10 @@
-A form where one can change the following.<br/>
-<br/>
-Title: {{.Title}}<br/>
-<br/>
-Body: {{.Body}}
 
+<paper-input label="Title" floatingLabel value="{{.Title}}"></paper-input>
+
+<br>
+
+<paper-input-decorator label="Description" floatingLabel>
+	<paper-autogrow-textarea>
+		<textarea>{{.Body}}</textarea>
+	</paper-autogrow-textarea>
+</paper-input-decorator>

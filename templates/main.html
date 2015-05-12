@@ -1,5 +1,14 @@
 <html>
 	<head>
+		<script src="/polymer-test2/components/webcomponentsjs/webcomponents.js"></script>
+		<script src="/polymer-test2/director/build/director.js"></script>
+
+		<link rel="import" href="/polymer-test2/components/font-roboto/roboto.html">
+		<link rel="import" href="/polymer-test2/components/core-elements/core-elements.html">
+		<link rel="import" href="/polymer-test2/components/paper-elements/paper-elements.html">	
+		<link rel="import" href="/polymer-test2/components/paper-input/paper-autogrow-textarea.html">
+
+		
 		<style>
 			@keyframes highlight {
 			   0% {background: none;}
@@ -27,6 +36,7 @@
 				margin:0px;
 				font-family: Arial, sans-serif;
 				font-size: 14px;
+				transition: none;
 			}
 			#header {
 				padding-left:8px;
@@ -129,9 +139,22 @@
 				font-size: 15px;
 				border-left: 1px solid rgb(221, 221, 221);
 			}
+			paper-input {
+				width: 100%;
+			}
+			paper-input-decorator {
+				max-width: 100%;
+			}
+			textarea{
+				padding: 0;
+				margin: 0;
+				border: none;
+				outline: none;
+				resize: none;
+			}
 		</style>
 	</head>
-	<body>
+	<body unresolved>
 		<div id="header">
 			{{.HeaderHtml}}
 		</div>
