@@ -1,10 +1,14 @@
 
-<paper-input label="Title" floatingLabel value="{{.Title}}"></paper-input>
+<paper-shadow class="card" z="1" style="padding:20px;">
 
-<br>
+	<paper-input label="Title" floatingLabel value="{{.Title}}"></paper-input>
+	
+	<br>
+	
+	<paper-input-decorator label="Description" floatingLabel>
+		<paper-autogrow-textarea>
+			<textarea>{{.Body}}</textarea>
+		</paper-autogrow-textarea>
+	</paper-input-decorator>
 
-<paper-input-decorator label="Description" floatingLabel>
-	<paper-autogrow-textarea>
-		<textarea>{{.Body}}</textarea>
-	</paper-autogrow-textarea>
-</paper-input-decorator>
+</paper-shadow>
